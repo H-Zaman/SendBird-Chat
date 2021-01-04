@@ -29,8 +29,12 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0
   get: ^3.24.0
-  dash_chat: ^1.1.15
   http: any
+  flutter_spinkit: ^4.1.2
+  loading_overlay: ^0.2.1
+  cached_network_image: ^2.5.0
+  bubble: ^1.1.9+1
+  sendbird_chat: ^0.0.2
 
 dev_dependencies:
   flutter_test:

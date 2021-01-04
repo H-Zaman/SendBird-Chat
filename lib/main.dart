@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:splashscreentest/sendBirdRepo.dart';
-import 'homeScreen.dart';
+import 'package:splashscreentest/widgets/screeLoader.dart';
+import 'repository/sendBirdRepo.dart';
+import 'view/homeScreen.dart';
 
 void main() {
-  SendBirdRepo.init();
   runApp(MyApp());
 }
 
@@ -33,6 +33,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+
+  TextEditingController textEditingController = TextEditingController();
+
+  bool screenLoading =false;
+
 double top = 300;
 double bottom = 300;
 double left = 200;
@@ -56,76 +61,102 @@ double right = 200;
     Future.delayed(Duration(milliseconds: 1700),nextPage);
   }
   nextPage(){
-    Get.offAll(HomeScreen());
+
+    Get.dialog(Dialog(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: textEditingController,
+          ),
+          RaisedButton(
+            onPressed: ()async{
+              if(textEditingController.text.length > 2){
+                Get.back();
+                setState(() {
+                  screenLoading = true;
+                });
+                await SendBirdRepo.getAllUsers();
+                await SendBirdRepo.createOrLoginUser(textEditingController.text);
+                Get.offAll(HomeScreen());
+              }
+            },
+            child: Text(
+              'Log in'
+            ),
+          )
+        ],
+      ),
+    ),barrierDismissible: false);
   }
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration(milliseconds: 1),forward);
-
-    SendBirdRepo.createOrLoginUser('Nafee Walee');
-
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          AnimatedPositioned(
-            top: top,
-            bottom: bottom,
-            left: left,
-            right: right,
-            duration: Duration(seconds: 2),
-            child: Container(
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    offset: Offset(4,4),
-                    blurRadius: 13.0,
-                    spreadRadius: 8,
-                    color: Colors.grey[300]
-                  ),
-                  BoxShadow(
-                    offset: Offset(-4,4),
-                    blurRadius: 13.0,
-                    spreadRadius: 8,
+    return IsScreenLoading(
+      screenLoading: screenLoading,
+      child: Scaffold(
+        body: Stack(
+          children: [
+            AnimatedPositioned(
+              top: top,
+              bottom: bottom,
+              left: left,
+              right: right,
+              duration: Duration(seconds: 2),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      offset: Offset(4,4),
+                      blurRadius: 13.0,
+                      spreadRadius: 8,
                       color: Colors.grey[300]
+                    ),
+                    BoxShadow(
+                      offset: Offset(-4,4),
+                      blurRadius: 13.0,
+                      spreadRadius: 8,
+                        color: Colors.grey[300]
 
-                  ),
-                  BoxShadow(
-                    offset: Offset(4,-4),
-                    blurRadius: 13.0,
-                    spreadRadius: 8,
-                      color: Colors.grey[300]
+                    ),
+                    BoxShadow(
+                      offset: Offset(4,-4),
+                      blurRadius: 13.0,
+                      spreadRadius: 8,
+                        color: Colors.grey[300]
 
-                  ),
-                  BoxShadow(
-                    offset: Offset(-4,-4),
-                    blurRadius: 13.0,
-                    spreadRadius: 8,
-                      color: Colors.grey[300]
+                    ),
+                    BoxShadow(
+                      offset: Offset(-4,-4),
+                      blurRadius: 13.0,
+                      spreadRadius: 8,
+                        color: Colors.grey[300]
 
-                  ),
-                ]
+                    ),
+                  ]
+                ),
               ),
             ),
-          ),
-          Center(
-              child: Hero(
-                tag: 'logo',
-                child: CircleAvatar(
-                  radius: 100,
-                  backgroundColor: Colors.transparent,
-                  backgroundImage: AssetImage(
-                      'assets/Circular-Logos.png'
+            Center(
+                child: Hero(
+                  tag: 'logo',
+                  child: CircleAvatar(
+                    radius: 100,
+                    backgroundColor: Colors.transparent,
+                    backgroundImage: AssetImage(
+                        'assets/Circular-Logos.png'
+                    ),
                   ),
-                ),
-              )
-          )
-        ],
+                )
+            )
+          ],
+        ),
       ),
     );
   }
