@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart';
@@ -77,9 +78,11 @@ class SendBirdRepo{
 
   static getAllUsers() async{
     Response response = await get(SENDBIRDBASEURL+'/users',headers: REQUESTHEADER);
+    ViewModel.users.clear();
     for(var temp in jsonDecode(response.body)['users']){
       ViewModel.users.add(UserModel.fromJson(temp));
     }
+    ViewModel.users.remove(currentUser);
   }
 
   static getMessages() async{
@@ -121,6 +124,7 @@ class SendBirdRepo{
 
     ///getting message of the channel
     List<dynamic> data = await sendbirdChat.getOpenChannelMessages(currentChatChannel.channelUrl);
+    ViewModel.chatMessage.clear();
     for(var temp in data){
       ViewModel.chatMessage.add(ChatMessageModel.fromJson(temp));
     }

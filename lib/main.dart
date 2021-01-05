@@ -77,7 +77,7 @@ double right = 200;
                   screenLoading = true;
                 });
                 await SendBirdRepo.getAllUsers();
-                await SendBirdRepo.createOrLoginUser(textEditingController.text);
+                await SendBirdRepo.createOrLoginUser(textEditingController.text.toLowerCase());
                 Get.offAll(HomeScreen());
               }
             },

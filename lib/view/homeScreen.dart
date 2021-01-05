@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,21 +11,36 @@ import '../model/userModel.dart';
 import '../view_model/ViewModel.dart';
 
 class HomeScreen extends StatefulWidget {
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   final TextEditingController searchBarController = TextEditingController();
+Timer timer;
+@override
+  void initState() {
+  getData();
+    super.initState();
+  }
 
-  bool screeLoading = false;
+  getData(){
+  timer = Timer.periodic(Duration(seconds: 1), (timer) async{
+    await SendBirdRepo.getAllUsers();
+  });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    timer.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return IsScreenLoading(
-      screenLoading: screeLoading,
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: Color(0xffbde0fe),
         appBar: AppBar(
           backgroundColor: Color(0xffcdb4db),
@@ -56,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   controller: searchBarController,
                   decoration: InputDecoration(
                       prefixIcon: Icon(
-                        Icons.search
+                          Icons.search
                       ),
                       fillColor: Color(0xffffc8dd),
                       filled: true,
@@ -73,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        body: ListView.builder(
+        body: Obx(()=>ListView.builder(
           shrinkWrap: true,
           padding: EdgeInsets.zero,
           itemCount: ViewModel.users.length,
@@ -87,13 +104,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   Get.to(ChattingScreen());
                 },
                 title: Text(
-                  user.nickname
+                    user.nickname.camelCase
                 ),
               ),
             );
           },
-        )
-      ),
+        ))
     );
   }
 }

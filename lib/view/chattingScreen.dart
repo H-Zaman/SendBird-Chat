@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bubble/bubble.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -27,13 +29,25 @@ class _ChattingScreenState extends State<ChattingScreen> {
     super.initState();
   }
 
+
+  Timer timer;
+
   getData() async{
 
-    await SendBirdRepo.getMessages();
+
+    timer = Timer.periodic(Duration(seconds: 1), (timer) async{
+      await SendBirdRepo.getMessages();
+    });
 
     setState(() {
       initLoad = false;
     });
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
   }
 
   @override
@@ -42,7 +56,7 @@ class _ChattingScreenState extends State<ChattingScreen> {
         appBar: AppBar(
           centerTitle: true,
           title: Text(
-            SendBirdRepo.toChatUser.nickname,
+            SendBirdRepo.toChatUser.nickname.camelCase,
           ),
           actions: [
             PopupMenuButton(
@@ -76,7 +90,7 @@ class _ChattingScreenState extends State<ChattingScreen> {
           children: [
             Expanded(
               flex: 8,
-              child: ListView.builder(
+              child: Obx(()=>ListView.builder(
                 shrinkWrap: true,
                 controller: scrollController,
                 padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
@@ -91,7 +105,7 @@ class _ChattingScreenState extends State<ChattingScreen> {
                     image: message.user.profileUrl,
                   );
                 },
-              ),
+              )),
             ),
             Card(
               child: Container(
